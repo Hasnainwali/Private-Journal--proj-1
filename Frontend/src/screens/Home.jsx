@@ -144,7 +144,7 @@ const Home = () => {
 
 
   // Search filter logic
-  const filteredJournals = getjournals.filter(
+  const filteredJournals = getjournals?.filter(
     (journal) =>
       journal.title.toLowerCase().includes(search.toLowerCase()) ||
       journal.content.toLowerCase().includes(search.toLowerCase())
@@ -162,6 +162,7 @@ const Home = () => {
         const res = await backendApi.get('/auth/me');
         const user = res.data.user;
         console.log(user, 'current user data')
+        console.log(user.image, 'current user image');
 
         setUser(user);
       }
@@ -203,7 +204,7 @@ const Home = () => {
       <div className=" relative max-w-6xl mx-auto px-4 py-6 sm:py-8">
 
         <div className="mx-auto flex justify-center z-30">
-          <img src={`http://localhost:4000/images/${user?.image}`} alt=""
+          <img src={user?.image} alt="prof-img"
             className="size-20 rounded-full bg-center border border-gray-800" />
         </div>
 

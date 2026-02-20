@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/signup', upload.single("image"), async (req, res) => {
     console.log(req.body)
     const { username, email, password } = req.body;
-    const image = req.file.filename;
+    const imageUrl = `${process.env.BASE_URL}/images/${req.file.filename}`;
 
     try {
         const existUser = await users.findOne({ email: email });
@@ -32,7 +32,7 @@ router.post('/signup', upload.single("image"), async (req, res) => {
             username,
             email,
             password: hashedPass,
-            image,
+            image: imageUrl, 
         })
 
         return res.status(201).json({ msg: 'You have created your account', success: true, newUser })
