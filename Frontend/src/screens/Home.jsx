@@ -40,7 +40,7 @@ const Home = () => {
       console.log(resp.data.allJournals);
 
       toast.success(resp.data.msg);
-      setGetJournals(resp.data.allJournals);
+      setGetJournals(resp.data.allJournals || []);
       console.log(getjournals, 'getjournals');
     }
 
@@ -235,7 +235,7 @@ const Home = () => {
         </div>
 
         <div className="max-w-52 total journals p-4 mx-5 my-3 ">
-          <h3 className="font-semibold font-serif">Total Journals: {getjournals?.length} </h3>
+          <h3 className="font-semibold font-serif">Total Journals: {getjournals?.length || 0} </h3>
         </div>
 
         {/* Journal List */}
