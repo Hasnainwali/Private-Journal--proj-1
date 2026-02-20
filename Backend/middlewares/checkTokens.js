@@ -5,7 +5,7 @@ import Users from '../models/users.js';
 
 
 //1: for checking tokens...
-const TokenAuth = async(req, res, next) => {
+const TokenAuth = async (req, res, next) => {
   const token = req.cookies?.tokens;
   console.log(token)
 
@@ -14,14 +14,14 @@ const TokenAuth = async(req, res, next) => {
       return res.status(401).json({ msg: "Token is not found" });
     }
 
-    const decodeToken = jwt.verify(token, 'abc22@');
+    const decodeToken = jwt.verify(token, process.env.TOKEN_KEY);
     console.log(decodeToken);
 
     //attaching user details with req...
     req.user = await Users.findById(decodeToken.id).select('-password');
 
     console.log(req.user)
-    
+
     next(); //move to the next code...
   }
 

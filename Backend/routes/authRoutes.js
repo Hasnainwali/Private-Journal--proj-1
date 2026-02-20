@@ -8,15 +8,13 @@ import bcrypt from 'bcryptjs'
 
 
 const router = express.Router();
-const key = process.env.TOKEN_KEY  //token key...
-
 
 
 //for registering new users with images...
 router.post('/signup', upload.single("image"), async (req, res) => {
     console.log(req.body)
     const { username, email, password } = req.body;
-    // const image = req.file.filename;
+    const image = req.file.filename;
 
     try {
         const existUser = await users.findOne({ email: email });
@@ -74,7 +72,7 @@ router.post('/login', async (req, res) => {
         }
 
         //granting and sending cookies...
-        const token = jwt.sign({ id: existUser._id }, key);
+        const token = jwt.sign({ id: existUser._id }, process.env.TOKEN_KEY);
 
         res.cookie('tokens', token, {
             httpOnly: true,
