@@ -3,7 +3,7 @@ import JournalCard from "../components/JournalCard";
 import backendApi from "../APIs/API.js";
 import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast'
-import {LogOut} from 'lucide-react'
+import { LogOut } from 'lucide-react'
 
 
 const Home = () => {
@@ -26,24 +26,24 @@ const Home = () => {
 
   const [loadUser, setLoadUser] = useState(null);
 
-  const [editMode, setEditMode]= useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [selectedJournalId, setSelectedJournalId] = useState(null)
 
-  
+
 
 
   //for total journals...
   const handleGetJournals = async () => {
     try {
-      
-    const resp = await backendApi.get('/getjournals', getjournals);
-    console.log(resp.data.allJournals);
 
-    toast.success(resp.data.msg);
-    setGetJournals(resp.data.allJournals);
-    console.log(getjournals, 'getjournals');
-    } 
-    
+      const resp = await backendApi.get('/getjournals', getjournals);
+      console.log(resp.data.allJournals);
+
+      toast.success(resp.data.msg);
+      setGetJournals(resp.data.allJournals);
+      console.log(getjournals, 'getjournals');
+    }
+
     catch (error) {
       toast.error(error.resp?.data?.message || "Something Went Wrong")
     }
@@ -55,36 +55,36 @@ const Home = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-try {
-      
-    //update kay liye...
-    if(editMode){
-      const response1 = await backendApi.put(`/journal/${selectedJournalId}`, journalData);
-      console.log(response1, '')
+    try {
 
-      toast.success(response1.data.msg)
+      //update kay liye...
+      if (editMode) {
+        const response1 = await backendApi.put(`/journal/${selectedJournalId}`, journalData);
+        console.log(response1, '')
+
+        toast.success(response1.data.msg)
+      }
+
+      //new create k liye
+      else {
+        const response2 = await backendApi.post('/journal', journalData);
+        console.log(response2);
+        toast.success(response2.data.msg)
+      }
+
+      handleGetJournals();
+      setshowPopup(false);
+      setEditMode(false);
+      setSelectedJournalId(null);
+      setjournalData({
+        title: '', desc: '', content: '',
+      })
+
     }
 
-    //new create k liye
-    else{
-      const response2 = await backendApi.post('/journal', journalData);
-    console.log(response2);
-    toast.success(response2.data.msg)
+    catch (error) {
+      toast.error(error.response1 && response2.data.msg || "something went wrong")
     }
-    
-    handleGetJournals();
-    setshowPopup(false);
-    setEditMode(false);
-    setSelectedJournalId(null);
-    setjournalData({
-      title: '', desc: '', content: '',
-    })
-  
-} 
-
-catch (error) {
-  toast.error(error.response1 && response2.data.msg || "something went wrong")
-}
 
   };
 
@@ -98,7 +98,7 @@ catch (error) {
   }
 
 
-  const handleEdit = (journal)=> {
+  const handleEdit = (journal) => {
     setjournalData({
       title: journal.title,
       desc: journal.desc,
@@ -112,16 +112,16 @@ catch (error) {
 
 
 
-  const handleDelete = async(id)=> {
-try {
+  const handleDelete = async (id) => {
+    try {
       const deleteResp = await backendApi.delete(`/journal/${id}`);
-    toast.success(deleteResp.data.msg)
+      toast.success(deleteResp.data.msg)
 
-  handleGetJournals();
-} 
-catch (error) {
-  toast.error(error.deleteResp.data.message || "something went wrong")
-}
+      handleGetJournals();
+    }
+    catch (error) {
+      toast.error(error.deleteResp.data.message || "something went wrong")
+    }
   }
 
 
@@ -130,12 +130,12 @@ catch (error) {
     try {
       const res = await backendApi.post('/auth/logout');
       console.log(res);
-      
+
       if (res.data.success === true) {
         toast.success(res.data.msg)
         navigate('/')
       }
-    } 
+    }
     catch (error) {
       toast.error(error.res.data.message || "something went wrong")
     }
@@ -183,7 +183,7 @@ catch (error) {
 
 
   return (
-    <div className="relative min-h-screen bg-[url('./public/bg-bann.png')] bg-cover bg-no-repeat">
+    <div className="relative min-h-screen bg-[url('./bg-bann.png')] bg-cover bg-no-repeat">
 
       {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 z-30 flex justify-between items-center">
@@ -203,8 +203,8 @@ catch (error) {
       <div className=" relative max-w-6xl mx-auto px-4 py-6 sm:py-8">
 
         <div className="mx-auto flex justify-center z-30">
-          <img src={`http://localhost:4000/images/${user?.image}`} alt="" 
-          className="size-20 rounded-full bg-center border border-gray-800"/>
+          <img src={`http://localhost:4000/images/${user?.image}`} alt=""
+            className="size-20 rounded-full bg-center border border-gray-800" />
         </div>
 
         <div className="grid justify-center mx-auto my-3">
@@ -248,10 +248,10 @@ catch (error) {
               filteredJournals.map((journal) => (
                 <JournalCard
                   key={journal._id}
-                  journal = {journal}
+                  journal={journal}
                   creationDate={journal.updatedAt}
-                  onEdit = {handleEdit}
-                  onDelete = {handleDelete}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
                 />
 
               ))

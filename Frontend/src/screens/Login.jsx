@@ -23,11 +23,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-          const response = await backendApi.post('/auth/login', loginData);
-          console.log(response);
-          
+      const response = await backendApi.post('/auth/login', loginData);
+      console.log(response);
+
       if (response.data.login === true) {
 
         toast.success(response.data.msg)
@@ -59,8 +59,9 @@ const Login = () => {
 
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[url('./public/auth.jpg')] bg-cover bg-no-repeat
+    <div className="min-h-screen w-full flex items-center justify-center bg-[url('./auth.jpg')] bg-cover bg-no-repeat
      overflow-hidden font-sans text-slate-900">
+      <div className='absolute inset-0 bg-black/50 z-0' />
 
       <div
         className="w-full max-w-md p-8 bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"

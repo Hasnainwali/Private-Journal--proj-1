@@ -77,8 +77,10 @@ const Signup = () => {
 
 
   return (
-    <div className="max-h-auto w-full flex items-center justify-center bg-[url('./public/auth.jpg')] bg-cover bg-no-repeat
+    <div className="min-h-screen w-full flex items-center justify-center bg-[url('./auth.jpg')] bg-cover bg-no-repeat
      relative overflow-hidden font-sans text-slate-900">
+
+      <div className='absolute inset-0 bg-black/50 z-0' />
 
       <div
         className="w-full max-w-md p-8 bg-white/70 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
