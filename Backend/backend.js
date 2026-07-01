@@ -23,10 +23,9 @@ dbConnection();
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'private-journal-frontend.vercel.app',
+    origin: process.env.FRONTEND_URL || 'https://private-journal-frontend.vercel.app/',
     credentials: true,
-}
-));
+}));
 
 // Giving access to frontend for pictures in uplaods...
 app.use('/images', express.static('./uploads'));
