@@ -5,14 +5,10 @@ import cookieParser from "cookie-parser";
 import env from 'dotenv'
 
 
-//Importing models...
-import journal from './models/journal.js';
-import users from './models/users.js';
 
-
+env.config();
 
 const app = express();
-env.config();
 
 
 //db connection...
@@ -23,7 +19,7 @@ dbConnection();
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'https://private-journal-frontend.vercel.app/',
+    origin: process.env.FRONTEND_URL || 'https://private-journal-frontend.vercel.app',
     credentials: true,
 }));
 
