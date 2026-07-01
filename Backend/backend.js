@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import env from 'dotenv'
 
 
-
 env.config();
 
 const app = express();
