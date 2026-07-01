@@ -1,5 +1,4 @@
 import express from "express";
-import mongoose from "mongoose";
 import cors from 'cors';
 import dbConnection from "./config/db.js";
 import cookieParser from "cookie-parser";
@@ -19,11 +18,12 @@ env.config();
 //db connection...
 dbConnection();
 
+
 //builtin middlewares...
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'https://private-journal-frontend.vercel.app',
     credentials: true,
 }
 ));
