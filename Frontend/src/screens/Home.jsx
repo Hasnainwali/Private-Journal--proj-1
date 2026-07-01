@@ -3,7 +3,7 @@ import JournalCard from "../components/JournalCard";
 import backendApi from "../APIs/API.js";
 import { useNavigate } from "react-router-dom";
 import toast from 'react-hot-toast'
-import { LogOut } from 'lucide-react'
+import { LogOut, Star } from 'lucide-react'
 
 
 const Home = () => {
@@ -13,6 +13,7 @@ const Home = () => {
     title: '',
     desc: '',
     content: '',
+    isFavorite: false,
   });
 
   //for rendering all journals from backend...
@@ -24,8 +25,6 @@ const Home = () => {
 
   const [user, setUser] = useState(null);
 
-  const [loadUser, setLoadUser] = useState(null);
-
   const [editMode, setEditMode] = useState(false);
   const [selectedJournalId, setSelectedJournalId] = useState(null)
 
@@ -36,12 +35,11 @@ const Home = () => {
   const handleGetJournals = async () => {
     try {
 
-      const resp = await backendApi.get('/getjournals', getjournals);
+      const resp = await backendApi.get('/getjournals');
       console.log(resp.data.allJournals);
 
       toast.success(resp.data.msg);
       setGetJournals(resp.data.allJournals || []);
-      console.log(getjournals, 'getjournals');
     }
 
     catch (error) {
@@ -77,13 +75,13 @@ const Home = () => {
       setEditMode(false);
       setSelectedJournalId(null);
       setjournalData({
-        title: '', desc: '', content: '',
+        title: '', desc: '', content: '', isFavorite: false,
       })
 
     }
 
     catch (error) {
-      toast.error(error.response1 && response2.data.msg || "something went wrong")
+      toast.error(error.response?.data?.msg || "something went wrong")
     }
 
   };
@@ -91,7 +89,7 @@ const Home = () => {
 
   const handleChange = (e) => {
     const name = e.target.name;
-    const value = e.target.value;
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
 
     setjournalData({ ...journalData, [name]: value });
     // console.log(journalData)
@@ -103,11 +101,29 @@ const Home = () => {
       title: journal.title,
       desc: journal.desc,
       content: journal.content,
+      isFavorite: journal.isFavorite || false,
     });
 
     setSelectedJournalId(journal._id);
     setEditMode(true);
     setshowPopup(true);
+  }
+
+
+  const handleToggleFavorite = async (id) => {
+    try {
+      const favoriteResp = await backendApi.patch(`/journal/${id}/favorite`);
+      toast.success(favoriteResp.data.msg)
+
+      setGetJournals((prevJournals) =>
+        prevJournals.map((journal) =>
+          journal._id === id ? favoriteResp.data.journal : journal
+        )
+      );
+    }
+    catch (error) {
+      toast.error(error.response?.data?.msg || "something went wrong")
+    }
   }
 
 
@@ -143,6 +159,26 @@ const Home = () => {
   };
 
 
+  const handleOpenPopup = () => {
+    setEditMode(false);
+    setSelectedJournalId(null);
+    setjournalData({
+      title: '', desc: '', content: '', isFavorite: false,
+    })
+    setshowPopup(true);
+  }
+
+
+  const handleClosePopup = () => {
+    setshowPopup(false);
+    setEditMode(false);
+    setSelectedJournalId(null);
+    setjournalData({
+      title: '', desc: '', content: '', isFavorite: false,
+    })
+  }
+
+
   // Search filter logic
   const filteredJournals = getjournals?.filter(
     (journal) =>
@@ -150,8 +186,47 @@ const Home = () => {
       journal.content.toLowerCase().includes(search.toLowerCase())
   );
 
+  const favoriteJournals = filteredJournals.filter((journal) => journal.isFavorite);
+  const otherJournals = filteredJournals.filter((journal) => !journal.isFavorite);
+
+  const renderJournalCards = (journals) => (
+    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      {
+        journals.map((journal) => (
+          <JournalCard
+            key={journal._id}
+            journal={journal}
+            creationDate={journal.updatedAt}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
+          />
+
+        ))
+      }
+    </div>
+  );
+
   useEffect(() => {
-    handleGetJournals();
+    let ignore = false;
+
+    backendApi.get('/getjournals')
+      .then((resp) => {
+        if (ignore) return;
+
+        console.log(resp.data.allJournals);
+        toast.success(resp.data.msg);
+        setGetJournals(resp.data.allJournals || []);
+      })
+      .catch((error) => {
+        if (ignore) return;
+
+        toast.error(error.resp?.data?.message || "Something Went Wrong")
+      });
+
+    return () => {
+      ignore = true;
+    }
 
   }, []);
 
@@ -166,17 +241,14 @@ const Home = () => {
 
         setUser(user);
       }
-      catch (error) {
+      catch {
         navigate('/');
-      }
-      finally {
-        setLoadUser(false)
       }
     };
 
     fetchUser();
 
-  }, [])
+  }, [navigate])
 
 
 
@@ -229,13 +301,17 @@ const Home = () => {
           {/* Add Journal Button */}
           <button className="bg-gradient-to-r from-slate-800 to-slate-700 text-white px-1.5 py-1 sm:px-4 sm:py-2 rounded-lg text-sm sm:text-base hover:bg-blue-700
             fixed top-17 right-3 sm:top-46 sm:right-18 shadow-md shadow-gray-800"
-            onClick={() => setshowPopup(true)}>
+            onClick={handleOpenPopup}>
             + New Journal
           </button>
         </div>
 
-        <div className="max-w-52 total journals p-4 mx-5 my-3 ">
+        <div className="flex flex-col sm:flex-row gap-3 p-4 mx-5 my-3">
           <h3 className="font-semibold font-serif">Total Journals: {getjournals?.length || 0} </h3>
+          <h3 className="font-semibold font-serif flex items-center gap-1">
+            <Star className="w-4 h-4 fill-yellow-400 text-yellow-600" />
+            Favorite Journals: {getjournals?.filter((journal) => journal.isFavorite).length || 0}
+          </h3>
         </div>
 
         {/* Journal List */}
@@ -244,20 +320,42 @@ const Home = () => {
             Oooh! No matching journals found 📘
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {
-              filteredJournals.map((journal) => (
-                <JournalCard
-                  key={journal._id}
-                  journal={journal}
-                  creationDate={journal.updatedAt}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
+          <>
+            <section className="mb-8">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xl font-semibold font-serif text-gray-800 flex items-center gap-2">
+                  <Star className="w-5 h-5 fill-yellow-400 text-yellow-600" />
+                  Favorite Journals
+                </h2>
+                <span className="text-sm font-medium text-gray-600">{favoriteJournals.length}</span>
+              </div>
 
-              ))
-            }
-          </div>
+              {favoriteJournals.length === 0 ? (
+                <p className="text-center text-gray-700 bg-white/70 rounded-lg py-5">
+                  No favorite journals yet.
+                </p>
+              ) : (
+                renderJournalCards(favoriteJournals)
+              )}
+            </section>
+
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xl font-semibold font-serif text-gray-800">
+                  {favoriteJournals.length > 0 ? 'Other Journals' : 'All Journals'}
+                </h2>
+                <span className="text-sm font-medium text-gray-600">{otherJournals.length}</span>
+              </div>
+
+              {otherJournals.length === 0 ? (
+                <p className="text-center text-gray-700 bg-white/70 rounded-lg py-5">
+                  No other journals to show.
+                </p>
+              ) : (
+                renderJournalCards(otherJournals)
+              )}
+            </section>
+          </>
 
         )}
       </div>
@@ -271,7 +369,9 @@ const Home = () => {
           <div className="fixed inset-0 bg-black/20 backdrop-blur-xs w-full h-screen">
             <section className="fixed inset-0 max-w-[auto] sm:max-w-[50vw] mx-auto my-5 h-auto p-6 bg-[#FFFFFF] rounded-md shadow-md">
               <div className="mb-3 mx-auto ">
-                <h1 className="text-xl text-center text-black font-semibold font-sans">Create Your Favorite Memory</h1>
+                <h1 className="text-xl text-center text-black font-semibold font-sans">
+                  {editMode ? 'Update Your Favorite Memory' : 'Create Your Favorite Memory'}
+                </h1>
               </div>
 
               {/* Form */}
@@ -333,16 +433,31 @@ const Home = () => {
                   </div>
                 </div>
 
+                <div className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2">
+                  <input
+                    id='isFavorite'
+                    name='isFavorite'
+                    type="checkbox"
+                    checked={journalData.isFavorite}
+                    onChange={handleChange}
+                    className="size-4 accent-slate-900"
+                  />
+                  <label className="text-sm font-medium text-slate-700" htmlFor='isFavorite'>
+                    Add to favorite notes
+                  </label>
+                </div>
+
                 <div className="flex *:mx-2">
                   <button
                     type='submit'
                     className="w-full bg-slate-900 text-white py-1.5 sm:py-3 rounded-xl font-semibold mt-2 sm:mt-4 flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
                   >
-                    Create
+                    {editMode ? 'Update' : 'Create'}
                     {/* <ArrowRight className="w-4 h-4" /> */}
                   </button>
                   <button
-                    onClick={() => setshowPopup(false)}
+                    type='button'
+                    onClick={handleClosePopup}
                     className="w-full bg-slate-900 text-white py-1.5 sm:py-3 rounded-xl font-semibold mt-2 sm:mt-4 flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200"
                   >
                     Cancel

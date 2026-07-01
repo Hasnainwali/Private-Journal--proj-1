@@ -9,6 +9,11 @@ const journalSchema = new mongoose.Schema({
 
   content: String,
 
+  isFavorite: {
+    type: Boolean,
+    default: false,
+  },
+
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",

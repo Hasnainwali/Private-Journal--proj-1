@@ -1,7 +1,7 @@
-import react from 'react'
+import { Star } from 'lucide-react'
 
 
-const JournalCard = ({ journal, onEdit, onDelete, creationDate }) => {
+const JournalCard = ({ journal, onEdit, onDelete, onToggleFavorite, creationDate }) => {
 
   //Date ko achi format mai show krne k liye...
   const formatDate = (dateString) => {
@@ -58,20 +58,33 @@ const JournalCard = ({ journal, onEdit, onDelete, creationDate }) => {
       </div>
 
       {/* Actions – Always at Bottom */}
-      <div className="border-t bg-gray-50 px-4 py-3 flex justify-end gap-3">
+      <div className="border-t bg-gray-50 px-4 py-3 flex flex-col sm:flex-row sm:justify-between gap-3">
         <button
-          onClick={() => onEdit(journal)}
-          className="px-4 py-1.5 text-sm rounded-md text-blue-600 border border-blue-500 hover:bg-blue-50 transition"
+          onClick={() => onToggleFavorite(journal._id)}
+          className={`px-4 py-1.5 text-sm rounded-md border flex items-center justify-center gap-1.5 transition ${journal.isFavorite
+            ? 'text-yellow-700 border-yellow-500 bg-yellow-50 hover:bg-yellow-100'
+            : 'text-slate-600 border-slate-400 hover:bg-slate-100'
+            }`}
         >
-          Edit
+          <Star className={`w-4 h-4 ${journal.isFavorite ? 'fill-yellow-400' : ''}`} />
+          {journal.isFavorite ? 'Favorite' : 'Add Favorite'}
         </button>
 
-        <button
-          onClick={() => onDelete(journal._id)}
-          className="px-4 py-1.5 text-sm rounded-md text-red-600 border border-red-500 hover:bg-red-50 transition"
-        >
-          Delete
-        </button>
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={() => onEdit(journal)}
+            className="px-4 py-1.5 text-sm rounded-md text-blue-600 border border-blue-500 hover:bg-blue-50 transition"
+          >
+            Edit
+          </button>
+
+          <button
+            onClick={() => onDelete(journal._id)}
+            className="px-4 py-1.5 text-sm rounded-md text-red-600 border border-red-500 hover:bg-red-50 transition"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
     </div>

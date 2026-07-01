@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.post('/journal', TokenAuth, async (req, res) => {
-    const { title, desc, content } = req.body;
+    const { title, desc, content, isFavorite } = req.body;
     const { id } = req.user;
     console.log(id, 'req.user.id');
 
@@ -22,6 +22,7 @@ router.post('/journal', TokenAuth, async (req, res) => {
             title,
             desc,
             content,
+            isFavorite,
             userId: req.user._id,
         });
 
@@ -76,6 +77,33 @@ router.put('/journal/:id', TokenAuth, async (req, res) => {
     }
     catch (error) {
         res.status(500).json(error.message, { msg: 'journal update failed' });
+    }
+});
+
+
+//for toggling favorite journal...
+router.patch('/journal/:id/favorite', TokenAuth, async (req, res) => {
+    try {
+        const journal = await journals.findOne({
+            _id: req.params.id,
+            userId: req.user._id
+        });
+
+        if (!journal) {
+            return res.status(404).json({ msg: 'journal not found', success: false });
+        }
+
+        journal.isFavorite = !journal.isFavorite;
+        await journal.save();
+
+        res.status(200).json({
+            msg: journal.isFavorite ? "journal added to favorites" : "journal removed from favorites",
+            success: true,
+            journal
+        })
+    }
+    catch (error) {
+        res.status(500).json(error.message);
     }
 });
 

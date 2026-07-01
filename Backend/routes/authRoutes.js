@@ -32,7 +32,7 @@ router.post('/signup', upload.single("image"), async (req, res) => {
             username,
             email,
             password: hashedPass,
-            image: imageUrl, 
+            image: imageUrl,
         })
 
         return res.status(201).json({ msg: 'You have created your account', success: true, newUser })
@@ -43,7 +43,6 @@ router.post('/signup', upload.single("image"), async (req, res) => {
         res.status(500).json(error.message)
     }
 })
-
 
 
 
