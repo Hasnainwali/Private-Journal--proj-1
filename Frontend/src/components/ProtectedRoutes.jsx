@@ -8,26 +8,21 @@ const ProtectedRoutes = () => {
 
     const [ok, setOk] = useState(null);
 
-    const gotoJournals = async () => {
-
+    const checkAuth = async () => {
         try {
-            const res = await backendApi.get('/getjournals');
-            // console.log(res);
-
-
+            const res = await backendApi.get('/auth/me');
             if (res.status === 200) {
-                setOk(true)
+                setOk(true);
             }
         }
         catch (error) {
-            console.log(error.message)
+            console.log(error.message);
             setOk(false);
-
         }
-    }
+    };
 
     useEffect(() => {
-        gotoJournals();
+        checkAuth();
     }, []);
 
 

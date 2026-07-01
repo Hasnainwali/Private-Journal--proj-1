@@ -46,7 +46,6 @@ const Home = () => {
       toast.error(error.resp?.data?.message || "Something Went Wrong")
     }
 
-
   };
 
 
@@ -208,26 +207,7 @@ const Home = () => {
   );
 
   useEffect(() => {
-    let ignore = false;
-
-    backendApi.get('/getjournals')
-      .then((resp) => {
-        if (ignore) return;
-
-        console.log(resp.data.allJournals);
-        toast.success(resp.data.msg);
-        setGetJournals(resp.data.allJournals || []);
-      })
-      .catch((error) => {
-        if (ignore) return;
-
-        toast.error(error.resp?.data?.message || "Something Went Wrong")
-      });
-
-    return () => {
-      ignore = true;
-    }
-
+    handleGetJournals();
   }, []);
 
 
