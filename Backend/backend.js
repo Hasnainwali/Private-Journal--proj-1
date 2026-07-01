@@ -46,30 +46,30 @@ app.use('/', journalRoutes);
 
 // RestFul API's
 
-app.get('/getdata', (req, res) => {
-    const { name, Address, Role } = req.body;
-    console.log(req.body);
-})
+// app.get('/getdata', (req, res) => {
+//     const { name, Address, Role } = req.body;
+//     console.log(req.body);
+// })
 
-app.post('/postdata', (req, res) => {
-    const { name, Address, Role } = req.body;
-    console.log(req.body);
-})
+// app.post('/postdata', (req, res) => {
+//     const { name, Address, Role } = req.body;
+//     console.log(req.body);
+// })
 
-app.put('/updatedata/:id', (req, res) => {
-    res.status(200).json({ msg: 'data is updated' })
-    console.log('your data has been updated');
-})
+// app.put('/updatedata/:id', (req, res) => {
+//     res.status(200).json({ msg: 'data is updated' })
+//     console.log('your data has been updated');
+// })
 
-app.patch('/patchdata/:id', (req, res) => {
-    res.status(200).json({ msg: 'data is updated' })
-    console.log('your data has been updated');
-})
+// app.patch('/patchdata/:id', (req, res) => {
+//     res.status(200).json({ msg: 'data is updated' })
+//     console.log('your data has been updated');
+// })
 
-app.get('/delete/id', (req, res) => {
-    res.status(200).json({ msg: 'data deleted' })
-    console.log("your data is deleted");
-})
+// app.get('/delete/id', (req, res) => {
+//     res.status(200).json({ msg: 'data deleted' })
+//     console.log("your data is deleted");
+// })
 
 
 
